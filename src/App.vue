@@ -7,7 +7,7 @@
       <div class="title-container">
         <div class="title-decoration"></div>
         <h1 class="main-title">
-          <span class="title-text">烟花祈愿池</span>
+          <span class="title-text">烟花祈愿</span>
           <span class="subtitle">Digital Fireworks & Wishes</span>
         </h1>
         <div class="title-decoration"></div>
@@ -19,15 +19,28 @@
       :selectedColorIndex="selectedColorIndex"
       :showBlessings="showBlessings"
       :autoMode="autoMode"
+      :autoQuality="autoQuality"
+      :performanceLevel="performanceLevel"
       @select-color="selectColor"
       @add-blessing="addCustomBlessing"
       @toggle-blessings="showBlessings = !showBlessings"
       @toggle-auto-mode="toggleAutoMode"
+      @toggle-auto-quality="toggleAutoQuality"
+      @set-quality="setQuality"
     />
     
     <div class="instructions">
       <span class="dot-indicator"></span>
       <span>点击屏幕放烟花，或开启自动模式</span>
+    </div>
+    
+    <!-- 性能指示器 -->
+    <div class="performance-indicator">
+      <span class="perf-badge" :class="[performanceLevel, { manual: !autoQuality }]">
+        {{ performanceLevel === 'high' ? '高画质' : performanceLevel === 'medium' ? '中画质' : '低画质' }}
+        <span class="perf-mode">{{ autoQuality ? '自动' : '手动' }}</span>
+      </span>
+      <span class="fps-counter">{{ currentFPS }} FPS</span>
     </div>
     
     <BlessingText 
@@ -39,11 +52,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import ControlPanel from './components/ControlPanel.vue'
 import BlessingText from './components/BlessingText.vue'
 import { useFireworks } from './composables/useFireworks.js'
 import { useBlessings } from './composables/useBlessings.js'
+import { usePerformance } from './composables/usePerformance.js'
 
 const canvas = ref(null)
 const selectedColorIndex = ref(0)
@@ -57,9 +71,26 @@ const BASE_DEBOUNCE_INTERVAL = 100  // 基础防抖间隔 100ms
 // 自动放烟花定时器
 let autoFireworkTimer = null
 
+// 性能管理
+const { 
+  performanceLevel,
+  currentFPS,
+  autoQuality,
+  getQualitySettings,
+  toggleAutoQuality,
+  setPerformanceLevel
+} = usePerformance()
+
+const qualitySettings = computed(() => getQualitySettings())
+
 // Use composables
-const { createFireworkParticles, fireworks } = useFireworks(canvas)
+const { createFireworkParticles, fireworks } = useFireworks(canvas, qualitySettings)
 const { activeBlessings, addCustomBlessing, showBlessing } = useBlessings()
+
+// 画质控制方法
+const setQuality = (level) => {
+  setPerformanceLevel(level)
+}
 
 const colors = [
   { 
@@ -382,6 +413,87 @@ canvas {
   }
 }
 
+/* 性能指示器 */
+.performance-indicator {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10;
+  pointer-events: none;
+  user-select: none;
+}
+
+.perf-badge {
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.perf-mode {
+  font-size: 9px;
+  opacity: 0.7;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.perf-badge.manual {
+  border-color: rgba(255, 215, 0, 0.3);
+  background: rgba(255, 215, 0, 0.08);
+}
+
+.perf-badge.high {
+  background: rgba(80, 250, 123, 0.15);
+  border-color: rgba(80, 250, 123, 0.4);
+  color: #50fa7b;
+  box-shadow: 0 4px 16px rgba(80, 250, 123, 0.2);
+}
+
+.perf-badge.medium {
+  background: rgba(255, 184, 108, 0.15);
+  border-color: rgba(255, 184, 108, 0.4);
+  color: #ffb86c;
+  box-shadow: 0 4px 16px rgba(255, 184, 108, 0.2);
+}
+
+.perf-badge.low {
+  background: rgba(255, 85, 85, 0.15);
+  border-color: rgba(255, 85, 85, 0.4);
+  color: #ff5555;
+  box-shadow: 0 4px 16px rgba(255, 85, 85, 0.2);
+}
+
+.fps-counter {
+  padding: 6px 14px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Consolas', 'Monaco', monospace;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .dot-indicator,
   .title-container,
@@ -394,6 +506,18 @@ canvas {
 @media (max-width: 768px) {
   .app-header {
     top: 20px;
+  }
+  
+  .performance-indicator {
+    top: 12px;
+    right: 12px;
+    gap: 6px;
+  }
+  
+  .perf-badge,
+  .fps-counter {
+    padding: 5px 10px;
+    font-size: 10px;
   }
   
   .title-container {

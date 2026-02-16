@@ -1,16 +1,20 @@
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { Firework } from '../utils/firework.js'
 
-export function useFireworks(canvasRef) {
+export function useFireworks(canvasRef, qualitySettings) {
   const fireworks = ref([])
   let ctx = null
   let animationId = null
   let lastTime = 0
-  const targetFPS = 60
-  const frameInterval = 1000 / targetFPS
+  let targetFPS = 60
+  let frameInterval = 1000 / targetFPS
   let canvasWidth = 0
   let canvasHeight = 0
-  const MAX_PARTICLES = 3000  // 限制最大粒子数
+  let MAX_PARTICLES = 3000
+  let PARTICLES_PER_FIREWORK = 200
+  let enableGlow = true
+  let trailAlpha = 0.05
+  let canvasScale = 1
 
   const resizeCanvas = () => {
     if (canvasRef.value) {
@@ -21,21 +25,40 @@ export function useFireworks(canvasRef) {
       canvasWidth = rect.width
       canvasHeight = rect.height
       
+      // 应用质量缩放
+      const effectiveDPR = dpr * canvasScale
+      
       // 设置 canvas 实际像素
-      canvasRef.value.width = canvasWidth * dpr
-      canvasRef.value.height = canvasHeight * dpr
+      canvasRef.value.width = canvasWidth * effectiveDPR
+      canvasRef.value.height = canvasHeight * effectiveDPR
       
       // 设置显示尺寸
       canvasRef.value.style.width = canvasWidth + 'px'
       canvasRef.value.style.height = canvasHeight + 'px'
       
-      // 重置并应用 DPR 缩放（避免累积）
+      // 重置并应用缩放（避免累积）
       if (ctx) {
         ctx.setTransform(1, 0, 0, 1, 0, 0)  // 重置 transform
-        ctx.scale(dpr, dpr)
+        ctx.scale(effectiveDPR, effectiveDPR)
       }
     }
   }
+
+  // 监听质量设置变化
+  watch(() => qualitySettings.value, (settings) => {
+    if (settings) {
+      MAX_PARTICLES = settings.maxParticles
+      PARTICLES_PER_FIREWORK = settings.particlesPerFirework
+      enableGlow = settings.enableGlow
+      trailAlpha = settings.trailAlpha
+      targetFPS = settings.targetFPS
+      frameInterval = 1000 / targetFPS
+      canvasScale = settings.canvasScale
+      Firework.setQuality(settings.simplifyRendering)
+      resizeCanvas()
+      console.log('质量设置已更新:', settings)
+    }
+  }, { immediate: true })
 
   const createFireworkParticles = (x, y, color) => {
     // 检查粒子数量限制
@@ -43,8 +66,11 @@ export function useFireworks(canvasRef) {
       return
     }
     
+    // 根据质量设置调整粒子数量
+    const baseCount = PARTICLES_PER_FIREWORK
+    const variance = baseCount * 0.3
     const particleCount = Math.min(
-      150 + Math.random() * 100,
+      Math.floor(baseCount + Math.random() * variance),
       MAX_PARTICLES - fireworks.value.length
     )
     
@@ -67,7 +93,7 @@ export function useFireworks(canvasRef) {
 
     // 使用 destination-out 实现拖尾效果（GPU 加速）
     ctx.globalCompositeOperation = 'destination-out'
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'
+    ctx.fillStyle = `rgba(0, 0, 0, ${trailAlpha})`
     ctx.fillRect(0, 0, canvasWidth, canvasHeight)
     
     // 批量更新和绘制（减少状态切换）

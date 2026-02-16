@@ -2,9 +2,17 @@
 const particlePool = []
 const MAX_POOL_SIZE = 1000
 
+// 质量设置
+let simplifyRendering = false
+
 export class Firework {
   constructor(x, y, color) {
     this.reset(x, y, color)
+  }
+
+  // 静态方法：设置渲染质量
+  static setQuality(simplified = false) {
+    simplifyRendering = simplified
   }
 
   reset(x, y, color) {
@@ -65,6 +73,24 @@ export class Firework {
     const y = this.y
     const size = this.size
     
+    // 简化渲染模式：只绘制核心和一层光晕
+    if (simplifyRendering) {
+      // 单层光晕
+      ctx.globalAlpha = this.alpha * 0.3 * effectiveBrightness
+      ctx.fillStyle = this.colorStr
+      ctx.beginPath()
+      ctx.arc(x, y, size * 1.5, 0, Math.PI * 2)
+      ctx.fill()
+      
+      // 核心
+      ctx.globalAlpha = this.alpha * effectiveBrightness
+      ctx.fillStyle = this.brightColorStr
+      ctx.beginPath()
+      ctx.arc(x, y, size * 0.5, 0, Math.PI * 2)
+      ctx.fill()
+      return
+    }
+    
     // 性能优化：alpha 很低时只绘制核心
     if (this.alpha < 0.3) {
       ctx.globalAlpha = this.alpha * effectiveBrightness
@@ -75,6 +101,7 @@ export class Firework {
       return
     }
     
+    // 完整渲染模式
     // 外层大光晕（柔和光芒）
     ctx.globalAlpha = this.alpha * 0.15 * effectiveBrightness
     ctx.fillStyle = this.colorStr

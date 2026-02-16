@@ -1,5 +1,5 @@
 <template>
-  <div class="control-panel" :class="{ collapsed: isCollapsed }" @click.stop>
+  <div class="control-panel" :class="{ collapsed: isCollapsed }" @click.stop="handlePanelClick">
     <button 
       class="toggle-btn"
       @click.stop="togglePanel"
@@ -8,6 +8,11 @@
     >
       <span class="toggle-icon">{{ isCollapsed ? '◀' : '▶' }}</span>
     </button>
+    
+    <!-- 收起状态的图标提示 -->
+    <div class="collapsed-icon" v-if="isCollapsed">
+      <span class="icon-text">⚙</span>
+    </div>
     
     <div class="panel-content">
       <h2>烟花祈愿池</h2>
@@ -64,6 +69,55 @@
     <div class="divider"></div>
     
     <div class="input-group">
+      <label>画质设置</label>
+      <button 
+        class="toggle-blessing-btn"
+        :class="{ active: autoQuality }"
+        @click="$emit('toggle-auto-quality')"
+        :aria-label="autoQuality ? '切换至手动画质' : '切换至自动画质'"
+      >
+        <span class="status-indicator" :class="{ active: autoQuality }"></span>
+        <span>{{ autoQuality ? '自动调节' : '手动调节' }}</span>
+      </button>
+    </div>
+    
+    <!-- 手动画质选择器 -->
+    <div class="input-group" v-if="!autoQuality">
+      <label>质量等级</label>
+      <div class="quality-selector">
+        <button 
+          class="quality-btn"
+          :class="{ active: performanceLevel === 'low' }"
+          @click="$emit('set-quality', 'low')"
+          aria-label="设置为低画质"
+        >
+          <span class="quality-label">低</span>
+          <span class="quality-desc">流畅优先</span>
+        </button>
+        <button 
+          class="quality-btn"
+          :class="{ active: performanceLevel === 'medium' }"
+          @click="$emit('set-quality', 'medium')"
+          aria-label="设置为中等画质"
+        >
+          <span class="quality-label">中</span>
+          <span class="quality-desc">均衡模式</span>
+        </button>
+        <button 
+          class="quality-btn"
+          :class="{ active: performanceLevel === 'high' }"
+          @click="$emit('set-quality', 'high')"
+          aria-label="设置为高画质"
+        >
+          <span class="quality-label">高</span>
+          <span class="quality-desc">画质优先</span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="input-group">
       <label>烟花颜色</label>
       <div class="color-palette">
         <button 
@@ -92,10 +146,12 @@ defineProps({
   colors: Array,
   selectedColorIndex: Number,
   showBlessings: Boolean,
-  autoMode: Boolean
+  autoMode: Boolean,
+  autoQuality: Boolean,
+  performanceLevel: String
 })
 
-const emit = defineEmits(['select-color', 'add-blessing', 'toggle-blessings', 'toggle-auto-mode'])
+const emit = defineEmits(['select-color', 'add-blessing', 'toggle-blessings', 'toggle-auto-mode', 'toggle-auto-quality', 'set-quality'])
 
 const customBlessing = ref('')
 const isCollapsed = ref(false)
@@ -109,6 +165,13 @@ onMounted(() => {
 
 const togglePanel = () => {
   isCollapsed.value = !isCollapsed.value
+}
+
+// 移动端点击面板展开
+const handlePanelClick = () => {
+  if (isCollapsed.value && window.innerWidth <= 768) {
+    togglePanel()
+  }
 }
 
 const handleAddBlessing = () => {
@@ -133,8 +196,9 @@ const handleAddBlessing = () => {
   z-index: 10;
   max-width: 340px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
+  /* macOS 风格的弹性动画 */
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, border-radius, width, height;
   transform: translateZ(0);
 }
 
@@ -143,18 +207,19 @@ const handleAddBlessing = () => {
 }
 
 .control-panel.collapsed:hover {
-  transform: translateX(calc(-100% + 56px));
+  transform: translateX(calc(-100% + 56px)) scale(1.02);
 }
 
 .panel-content {
   padding: 28px;
   opacity: 1;
-  transition: opacity 0.2s ease-out;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .control-panel.collapsed .panel-content {
   opacity: 0;
   pointer-events: none;
+  transform: scale(0.95);
 }
 
 .control-panel:not(.collapsed):hover {
@@ -181,7 +246,8 @@ const handleAddBlessing = () => {
   border-radius: 50%;
   color: white;
   cursor: pointer;
-  transition: all 0.2s ease-out;
+  /* macOS 风格弹性动画 */
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 2;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   will-change: transform, background;
@@ -190,18 +256,41 @@ const handleAddBlessing = () => {
 
 .toggle-btn:hover {
   background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-50%) scale(1.05) translateZ(0);
+  transform: translateY(-50%) scale(1.1) translateZ(0);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
 .toggle-btn:active {
-  transform: translateY(-50%) scale(0.95) translateZ(0);
+  transform: translateY(-50%) scale(0.9) translateZ(0);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .toggle-icon {
   display: inline-block;
   line-height: 1;
   opacity: 0.9;
+}
+
+/* 收起状态的图标 */
+.collapsed-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.control-panel.collapsed .collapsed-icon {
+  opacity: 1;
+}
+
+.icon-text {
+  font-size: 28px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
 }
 
 h2 {
@@ -359,22 +448,138 @@ h2 {
   }
 }
 
+/* 画质选择器 */
+.quality-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.quality-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 14px 8px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-size: 13px;
+}
+
+.quality-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.quality-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: rgba(102, 126, 234, 0.6);
+  color: white;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.35);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.quality-btn.active:hover {
+  background: linear-gradient(135deg, #7d8ff0 0%, #8a5db0 100%);
+  border-color: rgba(102, 126, 234, 0.8);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.45);
+}
+
+.quality-label {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.quality-desc {
+  font-size: 11px;
+  opacity: 0.85;
+  letter-spacing: 0.2px;
+}
+
 /* 移动端优化 */
 @media (max-width: 768px) {
   .control-panel {
     top: 16px;
     left: 16px;
-    right: 16px;
+    right: auto;
     max-width: calc(100% - 32px);
     width: auto;
+    /* macOS 风格平滑动画 */
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  /* 收起状态：变成小圆形按钮 */
+  .control-panel.collapsed {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+    max-width: 56px;
+    border-radius: 50%;
+    padding: 0;
+    transform: translateX(0) scale(1);
+    background: rgba(255, 255, 255, 0.18);
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  }
+  
+  .control-panel.collapsed:hover {
+    transform: scale(1.08);
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+  
+  .control-panel.collapsed:active {
+    transform: scale(0.95);
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* 显示收起图标 */
+  .collapsed-icon {
+    display: block;
+  }
+  
+  /* 收起时隐藏切换按钮 */
+  .control-panel.collapsed .toggle-btn {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-50%) scale(0);
+  }
+  
+  /* 展开时显示切换按钮 */
+  .control-panel:not(.collapsed) .toggle-btn {
+    opacity: 1;
+    right: 12px;
+    top: 16px;
+    transform: translateY(0) scale(1);
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    font-size: 14px;
   }
   
   .panel-content {
-    padding: 24px;
+    padding: 20px;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .control-panel.collapsed .panel-content {
+    transform: scale(0.8);
   }
   
   h2 {
-    font-size: 22px;
+    font-size: 20px;
+    margin-bottom: 20px;
   }
   
   .input-group input {
@@ -395,21 +600,13 @@ h2 {
   }
   
   .color-btn {
-    width: 52px;
-    height: 52px;
+    width: 50px;
+    height: 50px;
   }
   
   .color-palette {
-    gap: 14px;
+    gap: 12px;
     justify-content: center;
-  }
-  
-  .toggle-btn {
-    right: -18px;
-    width: 52px;
-    height: 52px;
-    min-width: 52px;
-    min-height: 52px;
   }
 }
 
@@ -417,21 +614,54 @@ h2 {
   .control-panel {
     top: 12px;
     left: 12px;
-    right: 12px;
-    max-width: calc(100% - 24px);
+  }
+  
+  /* 收起状态：更小的圆形按钮 */
+  .control-panel.collapsed {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    min-height: 52px;
+    max-width: 52px;
   }
   
   .panel-content {
-    padding: 20px;
+    padding: 18px;
   }
   
   h2 {
-    font-size: 20px;
+    font-size: 18px;
+    margin-bottom: 16px;
   }
   
   .color-btn {
-    width: 48px;
-    height: 48px;
+    width: 46px;
+    height: 46px;
+  }
+  
+  .divider {
+    margin: 16px 0;
+  }
+  
+  .input-group {
+    margin-bottom: 16px;
+  }
+  
+  .quality-selector {
+    gap: 8px;
+  }
+  
+  .quality-btn {
+    padding: 12px 6px;
+    font-size: 12px;
+  }
+  
+  .quality-label {
+    font-size: 14px;
+  }
+  
+  .quality-desc {
+    font-size: 10px;
   }
 }
 
