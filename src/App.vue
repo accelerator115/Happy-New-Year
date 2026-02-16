@@ -18,14 +18,16 @@
       :colors="colors"
       :selectedColorIndex="selectedColorIndex"
       :showBlessings="showBlessings"
+      :autoMode="autoMode"
       @select-color="selectColor"
       @add-blessing="addCustomBlessing"
       @toggle-blessings="showBlessings = !showBlessings"
+      @toggle-auto-mode="toggleAutoMode"
     />
     
     <div class="instructions">
       <span class="dot-indicator"></span>
-      <span>点击屏幕任意位置燃放烟花</span>
+      <span>点击屏幕放烟花，或开启自动模式</span>
     </div>
     
     <BlessingText 
@@ -37,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import ControlPanel from './components/ControlPanel.vue'
 import BlessingText from './components/BlessingText.vue'
 import { useFireworks } from './composables/useFireworks.js'
@@ -46,10 +48,14 @@ import { useBlessings } from './composables/useBlessings.js'
 const canvas = ref(null)
 const selectedColorIndex = ref(0)
 const showBlessings = ref(false)  // 控制是否显示祝福语
+const autoMode = ref(false)  // 控制是否自动放烟花
 
 // 防抖控制
 let lastFireworkTime = 0
 const BASE_DEBOUNCE_INTERVAL = 100  // 基础防抖间隔 100ms
+
+// 自动放烟花定时器
+let autoFireworkTimer = null
 
 // Use composables
 const { createFireworkParticles, fireworks } = useFireworks(canvas)
@@ -164,6 +170,64 @@ const handleTouch = (event) => {
     createFirework(x, y)
   }
 }
+
+// 自动放烟花功能
+const createRandomFirework = () => {
+  if (!canvas.value) return
+  
+  const width = window.innerWidth
+  const height = window.innerHeight
+  
+  // 在屏幕中间区域随机位置放烟花（避免边缘）
+  const x = Math.random() * (width * 0.8) + width * 0.1
+  const y = Math.random() * (height * 0.7) + height * 0.15
+  
+  createFirework(x, y)
+}
+
+const toggleAutoMode = () => {
+  autoMode.value = !autoMode.value
+  
+  if (autoMode.value) {
+    // 开启自动模式
+    startAutoFireworks()
+  } else {
+    // 关闭自动模式
+    stopAutoFireworks()
+  }
+}
+
+const startAutoFireworks = () => {
+  if (autoFireworkTimer) return
+  
+  // 立即放一次烟花
+  createRandomFirework()
+  
+  // 每隔 0.5-1 秒随机放一次烟花
+  const scheduleNext = () => {
+    const delay = Math.random() * 500 + 100  // 500ms - 1000ms 随机间隔
+    autoFireworkTimer = setTimeout(() => {
+      if (autoMode.value) {
+        createRandomFirework()
+        scheduleNext()
+      }
+    }, delay)
+  }
+  
+  scheduleNext()
+}
+
+const stopAutoFireworks = () => {
+  if (autoFireworkTimer) {
+    clearTimeout(autoFireworkTimer)
+    autoFireworkTimer = null
+  }
+}
+
+// 组件卸载时清理定时器
+onUnmounted(() => {
+  stopAutoFireworks()
+})
 </script>
 
 <style scoped>

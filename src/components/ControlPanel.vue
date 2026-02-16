@@ -34,6 +34,21 @@
     <div class="divider"></div>
     
     <div class="input-group">
+      <label>自动放烟花</label>
+      <button 
+        class="toggle-blessing-btn"
+        :class="{ active: autoMode }"
+        @click="$emit('toggle-auto-mode')"
+        :aria-label="autoMode ? '关闭自动模式' : '开启自动模式'"
+      >
+        <span class="status-indicator" :class="{ active: autoMode }"></span>
+        <span>{{ autoMode ? '已开启' : '已关闭' }}</span>
+      </button>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="input-group">
       <label>显示祝福语</label>
       <button 
         class="toggle-blessing-btn"
@@ -76,10 +91,11 @@ import { ref, onMounted } from 'vue'
 defineProps({
   colors: Array,
   selectedColorIndex: Number,
-  showBlessings: Boolean
+  showBlessings: Boolean,
+  autoMode: Boolean
 })
 
-const emit = defineEmits(['select-color', 'add-blessing', 'toggle-blessings'])
+const emit = defineEmits(['select-color', 'add-blessing', 'toggle-blessings', 'toggle-auto-mode'])
 
 const customBlessing = ref('')
 const isCollapsed = ref(false)
