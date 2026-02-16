@@ -26,16 +26,16 @@ defineProps({
 .blessing-text {
   position: absolute;
   color: white;
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 700;
   text-shadow: 
-    0 0 20px currentColor,
-    0 2px 4px rgba(0, 0, 0, 0.8),
-    0 0 40px rgba(255, 255, 255, 0.5);
+    0 0 24px currentColor,
+    0 3px 6px rgba(0, 0, 0, 0.9),
+    0 0 48px rgba(255, 255, 255, 0.6);
   pointer-events: none;
   z-index: 5;
   user-select: none;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   animation: fadeOut 2s ease-out forwards;
   white-space: nowrap;
   /* GPU 加速 */
@@ -48,22 +48,22 @@ defineProps({
   0% {
     opacity: 0;
     transform: translateY(0) scale(0.3);
-    filter: blur(4px);
+    filter: blur(5px);
   }
   20% {
     opacity: 1;
-    transform: translateY(-20px) scale(1);
+    transform: translateY(-24px) scale(1);
     filter: blur(0);
   }
   70% {
     opacity: 1;
-    transform: translateY(-40px) scale(1);
+    transform: translateY(-48px) scale(1);
     filter: blur(0);
   }
   100% {
     opacity: 0;
-    transform: translateY(-70px) scale(0.8);
-    filter: blur(2px);
+    transform: translateY(-80px) scale(0.8);
+    filter: blur(3px);
   }
 }
 
@@ -91,13 +91,13 @@ defineProps({
 /* 移动端优化 */
 @media (max-width: 768px) {
   .blessing-text {
-    font-size: 22px;
+    font-size: 24px;
   }
 }
 
 @media (max-width: 480px) {
   .blessing-text {
-    font-size: 18px;
+    font-size: 20px;
   }
 }
 </style>

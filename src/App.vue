@@ -2,6 +2,18 @@
   <div class="firework-app" @click="handleClick" @touchstart="handleTouch">
     <canvas ref="canvas"></canvas>
     
+    <!-- 主标题区域 -->
+    <header class="app-header">
+      <div class="title-container">
+        <div class="title-decoration"></div>
+        <h1 class="main-title">
+          <span class="title-text">烟花祈愿池</span>
+          <span class="subtitle">Digital Fireworks & Wishes</span>
+        </h1>
+        <div class="title-decoration"></div>
+      </div>
+    </header>
+    
     <ControlPanel 
       :colors="colors"
       :selectedColorIndex="selectedColorIndex"
@@ -12,7 +24,7 @@
     />
     
     <div class="instructions">
-      <Sparkles :size="20" class="icon" />
+      <span class="dot-indicator"></span>
       <span>点击屏幕任意位置燃放烟花</span>
     </div>
     
@@ -26,7 +38,6 @@
 
 <script setup>
 import { ref } from 'vue'
-import { Sparkles } from 'lucide-vue-next'
 import ControlPanel from './components/ControlPanel.vue'
 import BlessingText from './components/BlessingText.vue'
 import { useFireworks } from './composables/useFireworks.js'
@@ -34,7 +45,7 @@ import { useBlessings } from './composables/useBlessings.js'
 
 const canvas = ref(null)
 const selectedColorIndex = ref(0)
-const showBlessings = ref(true)  // 控制是否显示祝福语
+const showBlessings = ref(false)  // 控制是否显示祝福语
 
 // 防抖控制
 let lastFireworkTime = 0
@@ -161,6 +172,7 @@ const handleTouch = (event) => {
   height: 100vh;
   position: relative;
   cursor: crosshair;
+  overflow: hidden;
 }
 
 canvas {
@@ -175,66 +187,206 @@ canvas {
   transform: translateZ(0);
 }
 
+/* 主标题区域 */
+.app-header {
+  position: absolute;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  pointer-events: none;
+  user-select: none;
+}
+
+.title-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 40px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius-xl);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+    0 0 60px rgba(255, 215, 0, 0.1);
+  animation: titleGlow 3s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+  0%, 100% {
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+      0 0 60px rgba(255, 215, 0, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+      0 0 80px rgba(255, 215, 0, 0.2);
+  }
+}
+
+.title-decoration {
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+  box-shadow: 0 0 10px var(--color-accent);
+}
+
+.main-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.title-text {
+  font-size: 36px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #ffd700 50%, #ffffff 100%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 4px;
+  text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+}
+
+.subtitle {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+}
+
 .instructions {
   position: absolute;
-  bottom: 24px;
+  bottom: var(--spacing-xl);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
+  gap: 12px;
+  padding: 14px 28px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 15px;
   font-weight: 500;
   z-index: 10;
   user-select: none;
   pointer-events: none;
-  transition: all 0.3s ease-out;
+  transition: all var(--transition-slow);
   max-width: calc(100vw - 32px);
-  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
-.instructions .icon {
+.dot-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.3);
+  animation: pulse 2s ease-in-out infinite;
   flex-shrink: 0;
-  animation: sparkle 2s ease-in-out infinite;
 }
 
-@keyframes sparkle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.1); }
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1);
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  50% { 
+    opacity: 0.7; 
+    transform: scale(1.2);
+    box-shadow: 0 0 16px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.5);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .instructions .icon {
+  .dot-indicator,
+  .title-container,
+  .title-text {
     animation: none;
   }
 }
 
 /* 移动端优化 */
 @media (max-width: 768px) {
-  .instructions {
-    bottom: 16px;
-    padding: 10px 20px;
-    font-size: 13px;
+  .app-header {
+    top: 20px;
   }
   
-  .instructions .icon {
-    width: 18px;
-    height: 18px;
+  .title-container {
+    padding: 16px 28px;
+    gap: 16px;
+  }
+  
+  .title-text {
+    font-size: 28px;
+    letter-spacing: 3px;
+  }
+  
+  .subtitle {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+  
+  .title-decoration {
+    width: 30px;
+  }
+  
+  .instructions {
+    bottom: var(--spacing-lg);
+    padding: 12px 24px;
+    font-size: 14px;
   }
 }
 
 @media (max-width: 480px) {
+  .app-header {
+    top: 16px;
+  }
+  
+  .title-container {
+    padding: 12px 20px;
+    gap: 12px;
+  }
+  
+  .title-text {
+    font-size: 22px;
+    letter-spacing: 2px;
+  }
+  
+  .subtitle {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+  }
+  
+  .title-decoration {
+    width: 24px;
+  }
+  
   .instructions {
-    bottom: 12px;
-    padding: 8px 16px;
-    font-size: 12px;
-    gap: 6px;
+    bottom: var(--spacing-md);
+    padding: 10px 20px;
+    font-size: 13px;
+    gap: 10px;
   }
   
   .instructions span {
