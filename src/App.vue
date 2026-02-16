@@ -58,6 +58,7 @@ import BlessingText from './components/BlessingText.vue'
 import { useFireworks } from './composables/useFireworks.js'
 import { useBlessings } from './composables/useBlessings.js'
 import { usePerformance } from './composables/usePerformance.js'
+import { startDevToolsDetection, stopDevToolsDetection } from './utils/devtools-detector.js'
 
 const canvas = ref(null)
 const selectedColorIndex = ref(0)
@@ -255,9 +256,15 @@ const stopAutoFireworks = () => {
   }
 }
 
+// 组件挂载时启动开发者工具检测
+onMounted(() => {
+  startDevToolsDetection()
+})
+
 // 组件卸载时清理定时器
 onUnmounted(() => {
   stopAutoFireworks()
+  stopDevToolsDetection()
 })
 </script>
 
