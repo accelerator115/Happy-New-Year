@@ -1,0 +1,42 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  overflow: hidden;
+  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* GPU 加速 */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+  /* GPU 加速 */
+  will-change: auto;
+  transform: translateZ(0);
+}
+
+/* Focus visible for accessibility */
+*:focus-visible {
+  outline: 2px solid rgba(255, 215, 0, 0.6);
+  outline-offset: 2px;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

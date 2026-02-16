@@ -1,0 +1,19 @@
+{
+  "name": "firework-wishes",
+  "version": "1.0.0",
+  "description": "数字烟花祈愿池",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lucide-vue-next": "^0.344.0",
+    "vue": "^3.4.15"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.3",
+    "vite": "^7.3.1"
+  }
+}
