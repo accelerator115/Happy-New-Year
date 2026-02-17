@@ -10,9 +10,20 @@
 
 **一个基于 Vue 3 + Vite + Canvas 的交互式烟花祈愿应用**
 
-[✨ 在线演示](https://fireworkwish.cmlover.cn/) | [📖 文档](#使用方法) | [🚀 快速开始](#快速开始)
+[✨ 在线演示](https://fireworkwish.cmlover.cn/) | [📖 技术文档](./docs) | [🚀 快速开始](#快速开始)
 
 </div>
+
+---
+
+## 📚 文档导航
+
+- **[项目架构](./docs/ARCHITECTURE.md)** - 技术栈和架构设计
+- **[PWA 配置](./docs/PWA-SETUP.md)** - PWA 离线支持配置
+- **[ESLint 配置](./docs/ESLINT-SETUP.md)** - 代码质量检查
+- **[Git Hooks](./docs/GIT-HOOKS-GUIDE.md)** - 提交前自动检查
+- **[部署指南](./docs/DEPLOYMENT.md)** - 生产环境部署
+- **[更多文档...](./docs/README.md)** - 完整文档索引
 
 ---
 
