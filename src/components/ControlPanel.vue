@@ -1,140 +1,162 @@
 <template>
-  <div class="control-panel" :class="{ collapsed: isCollapsed }" @click.stop="handlePanelClick">
+  <div
+    class="control-panel"
+    :class="{ collapsed: isCollapsed }"
+    @click.stop="handlePanelClick"
+  >
     <button 
       class="toggle-btn"
-      @click.stop="togglePanel"
       :aria-label="isCollapsed ? '展开控制面板' : '收起控制面板'"
       :aria-expanded="!isCollapsed"
+      @click.stop="togglePanel"
     >
       <span class="toggle-icon">{{ isCollapsed ? '◀' : '▶' }}</span>
     </button>
     
     <!-- 收起状态的图标提示 -->
-    <div class="collapsed-icon" v-if="isCollapsed">
+    <div
+      v-if="isCollapsed"
+      class="collapsed-icon"
+    >
       <span class="icon-text">⚙</span>
     </div>
     
     <div class="panel-content">
       <h2>烟花祈愿池</h2>
     
-    <div class="input-group">
-      <label>自定义祝福语</label>
-      <input 
-        v-model="customBlessing" 
-        type="text" 
-        placeholder="输入你的新年祝福..."
-        @keyup.enter="handleAddBlessing"
-        aria-label="自定义祝福语输入框"
-      />
-    </div>
-    
-    <button 
-      class="btn btn-primary" 
-      @click="handleAddBlessing"
-      :disabled="!customBlessing.trim()"
-    >
-      添加祝福
-    </button>
-    
-    <div class="divider"></div>
-    
-    <div class="input-group">
-      <label>自动放烟花</label>
-      <button 
-        class="toggle-blessing-btn"
-        :class="{ active: autoMode }"
-        @click="$emit('toggle-auto-mode')"
-        :aria-label="autoMode ? '关闭自动模式' : '开启自动模式'"
-      >
-        <span class="status-indicator" :class="{ active: autoMode }"></span>
-        <span>{{ autoMode ? '已开启' : '已关闭' }}</span>
-      </button>
-    </div>
-    
-    <div class="divider"></div>
-    
-    <div class="input-group">
-      <label>显示祝福语</label>
-      <button 
-        class="toggle-blessing-btn"
-        :class="{ active: showBlessings }"
-        @click="$emit('toggle-blessings')"
-        :aria-label="showBlessings ? '关闭祝福语' : '开启祝福语'"
-      >
-        <span class="status-indicator" :class="{ active: showBlessings }"></span>
-        <span>{{ showBlessings ? '已开启' : '已关闭' }}</span>
-      </button>
-    </div>
-    
-    <div class="divider"></div>
-    
-    <div class="input-group">
-      <label>画质设置</label>
-      <button 
-        class="toggle-blessing-btn"
-        :class="{ active: autoQuality }"
-        @click="$emit('toggle-auto-quality')"
-        :aria-label="autoQuality ? '切换至手动画质' : '切换至自动画质'"
-      >
-        <span class="status-indicator" :class="{ active: autoQuality }"></span>
-        <span>{{ autoQuality ? '自动调节' : '手动调节' }}</span>
-      </button>
-    </div>
-    
-    <!-- 手动画质选择器 -->
-    <div class="input-group" v-if="!autoQuality">
-      <label>质量等级</label>
-      <div class="quality-selector">
-        <button 
-          class="quality-btn"
-          :class="{ active: performanceLevel === 'low' }"
-          @click="$emit('set-quality', 'low')"
-          aria-label="设置为低画质"
+      <div class="input-group">
+        <label>自定义祝福语</label>
+        <input 
+          v-model="customBlessing" 
+          type="text" 
+          placeholder="输入你的新年祝福..."
+          aria-label="自定义祝福语输入框"
+          @keyup.enter="handleAddBlessing"
         >
-          <span class="quality-label">低</span>
-          <span class="quality-desc">流畅优先</span>
-        </button>
+      </div>
+    
+      <button 
+        class="btn btn-primary" 
+        :disabled="!customBlessing.trim()"
+        @click="handleAddBlessing"
+      >
+        添加祝福
+      </button>
+    
+      <div class="divider"></div>
+    
+      <div class="input-group">
+        <label>自动放烟花</label>
         <button 
-          class="quality-btn"
-          :class="{ active: performanceLevel === 'medium' }"
-          @click="$emit('set-quality', 'medium')"
-          aria-label="设置为中等画质"
+          class="toggle-blessing-btn"
+          :class="{ active: autoMode }"
+          :aria-label="autoMode ? '关闭自动模式' : '开启自动模式'"
+          @click="$emit('toggle-auto-mode')"
         >
-          <span class="quality-label">中</span>
-          <span class="quality-desc">均衡模式</span>
-        </button>
-        <button 
-          class="quality-btn"
-          :class="{ active: performanceLevel === 'high' }"
-          @click="$emit('set-quality', 'high')"
-          aria-label="设置为高画质"
-        >
-          <span class="quality-label">高</span>
-          <span class="quality-desc">画质优先</span>
+          <span
+            class="status-indicator"
+            :class="{ active: autoMode }"
+          ></span>
+          <span>{{ autoMode ? '已开启' : '已关闭' }}</span>
         </button>
       </div>
-    </div>
     
-    <div class="divider"></div>
+      <div class="divider"></div>
     
-    <div class="input-group">
-      <label>烟花颜色</label>
-      <div class="color-palette">
+      <div class="input-group">
+        <label>显示祝福语</label>
         <button 
-          v-for="(color, index) in colors" 
-          :key="index"
-          class="color-btn"
-          :class="{ active: selectedColorIndex === index, rainbow: color.isRandom }"
-          :style="{ background: color.gradient }"
-          :aria-label="`选择${color.name}烟花`"
-          :aria-pressed="selectedColorIndex === index"
-          :title="color.name"
-          @click="$emit('select-color', index)"
+          class="toggle-blessing-btn"
+          :class="{ active: showBlessings }"
+          :aria-label="showBlessings ? '关闭祝福语' : '开启祝福语'"
+          @click="$emit('toggle-blessings')"
         >
-          <span v-if="selectedColorIndex === index" class="check-mark">✓</span>
+          <span
+            class="status-indicator"
+            :class="{ active: showBlessings }"
+          ></span>
+          <span>{{ showBlessings ? '已开启' : '已关闭' }}</span>
         </button>
       </div>
-    </div>
+    
+      <div class="divider"></div>
+    
+      <div class="input-group">
+        <label>画质设置</label>
+        <button 
+          class="toggle-blessing-btn"
+          :class="{ active: autoQuality }"
+          :aria-label="autoQuality ? '切换至手动画质' : '切换至自动画质'"
+          @click="$emit('toggle-auto-quality')"
+        >
+          <span
+            class="status-indicator"
+            :class="{ active: autoQuality }"
+          ></span>
+          <span>{{ autoQuality ? '自动调节' : '手动调节' }}</span>
+        </button>
+      </div>
+    
+      <!-- 手动画质选择器 -->
+      <div
+        v-if="!autoQuality"
+        class="input-group"
+      >
+        <label>质量等级</label>
+        <div class="quality-selector">
+          <button 
+            class="quality-btn"
+            :class="{ active: performanceLevel === 'low' }"
+            aria-label="设置为低画质"
+            @click="$emit('set-quality', 'low')"
+          >
+            <span class="quality-label">低</span>
+            <span class="quality-desc">流畅优先</span>
+          </button>
+          <button 
+            class="quality-btn"
+            :class="{ active: performanceLevel === 'medium' }"
+            aria-label="设置为中等画质"
+            @click="$emit('set-quality', 'medium')"
+          >
+            <span class="quality-label">中</span>
+            <span class="quality-desc">均衡模式</span>
+          </button>
+          <button 
+            class="quality-btn"
+            :class="{ active: performanceLevel === 'high' }"
+            aria-label="设置为高画质"
+            @click="$emit('set-quality', 'high')"
+          >
+            <span class="quality-label">高</span>
+            <span class="quality-desc">画质优先</span>
+          </button>
+        </div>
+      </div>
+    
+      <div class="divider"></div>
+    
+      <div class="input-group">
+        <label>烟花颜色</label>
+        <div class="color-palette">
+          <button 
+            v-for="(color, index) in colors" 
+            :key="index"
+            class="color-btn"
+            :class="{ active: selectedColorIndex === index, rainbow: color.isRandom }"
+            :style="{ background: color.gradient }"
+            :aria-label="`选择${color.name}烟花`"
+            :aria-pressed="selectedColorIndex === index"
+            :title="color.name"
+            @click="$emit('select-color', index)"
+          >
+            <span
+              v-if="selectedColorIndex === index"
+              class="check-mark"
+            >✓</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>

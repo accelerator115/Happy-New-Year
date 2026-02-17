@@ -172,8 +172,6 @@ Happy-New-Year/
 - 批量粒子渲染
 - 智能帧率控制
 
-详细性能优化说明请查看 [GPU_OPTIMIZATION.md](GPU_OPTIMIZATION.md)
-
 ## PWA 支持
 
 本应用已配置为 Progressive Web App (PWA)，支持以下功能：
@@ -202,14 +200,6 @@ Happy-New-Year/
 - ✅ **独立应用** - 安装后作为独立应用运行，无浏览器UI
 - ✅ **自动更新** - 检测到新版本时自动提示更新
 - ✅ **全屏体验** - 移动端全屏展示，沉浸式体验
-
-### 配置图标
-PWA需要特定尺寸的图标文件，请参考 [public/PWA-ICONS-README.md](public/PWA-ICONS-README.md) 准备图标。
-
-临时可以使用 `public/icon-template.svg` 转换为所需的PNG格式：
-- pwa-192x192.png (192x192)
-- pwa-512x512.png (512x512)
-- apple-touch-icon.png (180x180)
 
 ### 测试PWA
 ```bash

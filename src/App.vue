@@ -1,5 +1,9 @@
 <template>
-  <div class="firework-app" @click="handleClick" @touchstart="handleTouch">
+  <div
+    class="firework-app"
+    @click="handleClick"
+    @touchstart="handleTouch"
+  >
     <canvas ref="canvas"></canvas>
     
     <!-- 主标题区域 -->
@@ -16,11 +20,11 @@
     
     <ControlPanel 
       :colors="colors"
-      :selectedColorIndex="selectedColorIndex"
-      :showBlessings="showBlessings"
-      :autoMode="autoMode"
-      :autoQuality="autoQuality"
-      :performanceLevel="performanceLevel"
+      :selected-color-index="selectedColorIndex"
+      :show-blessings="showBlessings"
+      :auto-mode="autoMode"
+      :auto-quality="autoQuality"
+      :performance-level="performanceLevel"
       @select-color="selectColor"
       @add-blessing="addCustomBlessing"
       @toggle-blessings="showBlessings = !showBlessings"
@@ -36,7 +40,10 @@
     
     <!-- 性能指示器 -->
     <div class="performance-indicator">
-      <span class="perf-badge" :class="[performanceLevel, { manual: !autoQuality }]">
+      <span
+        class="perf-badge"
+        :class="[performanceLevel, { manual: !autoQuality }]"
+      >
         {{ performanceLevel === 'high' ? '高画质' : performanceLevel === 'medium' ? '中画质' : '低画质' }}
         <span class="perf-mode">{{ autoQuality ? '自动' : '手动' }}</span>
       </span>
