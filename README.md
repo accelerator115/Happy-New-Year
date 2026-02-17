@@ -1,6 +1,20 @@
-# 数字烟花祈愿池
+# 🎆 数字烟花祈愿池
 
-一个基于 Vue 3 + Vite + Canvas 的交互式烟花祈愿应用。
+<div align="center">
+
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-fireworkwish.cmlover.cn-brightgreen?style=for-the-badge)](https://fireworkwish.cmlover.cn/)
+[![Vue](https://img.shields.io/badge/Vue-3.4-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)](https://vuejs.org/)
+[![Vite](https://img.shields.io/badge/Vite-7.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](./LICENSE)
+[![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://fireworkwish.cmlover.cn/)
+
+**一个基于 Vue 3 + Vite + Canvas 的交互式烟花祈愿应用**
+
+[✨ 在线演示](https://fireworkwish.cmlover.cn/) | [📖 文档](#使用方法) | [🚀 快速开始](#快速开始)
+
+</div>
+
+---
 
 ## 功能特性
 
@@ -212,7 +226,31 @@ npm run preview
 3. 检查 Manifest 和 Service Workers 是否正常
 4. 使用 Lighthouse 测试 PWA 评分
 
-##
-## 📝 License
+## 🌟 Star History
 
-MIT
+如果这个项目对你有帮助，请给个 ⭐️ Star 支持一下！
+
+## 🤝 Contributing
+
+欢迎提交 Issue 和 Pull Request！
+
+## 📄 License
+
+本项目采用 [MIT](./LICENSE) 许可证。
+
+## 💖 致谢
+
+- [Vue.js](https://vuejs.org/) - 渐进式 JavaScript 框架
+- [Vite](https://vitejs.dev/) - 下一代前端构建工具
+- [Lucide Icons](https://lucide.dev/) - 精美的开源图标库
+- [RealFaviconGenerator](https://realfavicongenerator.net/) - Favicon 生成工具
+
+---
+
+<div align="center">
+
+**Made with ❤️ by [accelerator115](https://github.com/accelerator115)**
+
+[⬆ 回到顶部](#-数字烟花祈愿池)
+
+</div>

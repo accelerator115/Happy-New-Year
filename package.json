@@ -1,8 +1,28 @@
 {
   "name": "firework-wishes",
   "version": "1.0.0",
-  "description": "数字烟花祈愿池",
+  "description": "🎆 数字烟花祈愿池 - 新年交互式烟花祝福应用 | Interactive New Year Fireworks Wishing App",
   "type": "module",
+  "homepage": "https://fireworkwish.cmlover.cn/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/accelerator115/Happy-New-Year.git"
+  },
+  "keywords": [
+    "fireworks",
+    "new-year",
+    "vue3",
+    "vite",
+    "canvas",
+    "pwa",
+    "interactive",
+    "animation",
+    "chinese-new-year",
+    "celebration",
+    "wishes"
+  ],
+  "author": "accelerator115",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
