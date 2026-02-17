@@ -14,6 +14,7 @@
 - **响应式设计** - 完美适配手机、平板、桌面端
 - **无障碍访问** - 支持键盘导航和屏幕阅读器
 - **性能优化** - 尊重用户的减少动画偏好设置
+- **PWA支持** - 可安装为独立应用，支持离线访问
 
 ## 快速开始
 
@@ -158,6 +159,58 @@ Happy-New-Year/
 - 智能帧率控制
 
 详细性能优化说明请查看 [GPU_OPTIMIZATION.md](GPU_OPTIMIZATION.md)
+
+## PWA 支持
+
+本应用已配置为 Progressive Web App (PWA)，支持以下功能：
+
+### 安装应用
+在支持PWA的浏览器中访问应用时，可以将其安装到设备：
+
+#### 桌面端（Chrome/Edge）
+1. 访问应用网址
+2. 点击地址栏右侧的"安装"图标
+3. 或点击浏览器菜单 → "安装数字烟花祈愿池"
+
+#### 移动端（Android）
+1. 在Chrome中打开应用
+2. 点击右上角菜单 → "添加到主屏幕"
+3. 应用图标将出现在主屏幕上
+
+#### 移动端（iOS）
+1. 在Safari中打开应用
+2. 点击分享按钮
+3. 选择"添加到主屏幕"
+
+### PWA 特性
+- ✅ **离线访问** - 首次访问后，即使没有网络也能使用
+- ✅ **快速加载** - Service Worker缓存提供秒开体验
+- ✅ **独立应用** - 安装后作为独立应用运行，无浏览器UI
+- ✅ **自动更新** - 检测到新版本时自动提示更新
+- ✅ **全屏体验** - 移动端全屏展示，沉浸式体验
+
+### 配置图标
+PWA需要特定尺寸的图标文件，请参考 [public/PWA-ICONS-README.md](public/PWA-ICONS-README.md) 准备图标。
+
+临时可以使用 `public/icon-template.svg` 转换为所需的PNG格式：
+- pwa-192x192.png (192x192)
+- pwa-512x512.png (512x512)
+- apple-touch-icon.png (180x180)
+
+### 测试PWA
+```bash
+# 构建生产版本
+npm run build
+
+# 预览（测试PWA功能）
+npm run preview
+```
+
+然后在浏览器中：
+1. 打开 DevTools (F12)
+2. 切换到 Application 标签
+3. 检查 Manifest 和 Service Workers 是否正常
+4. 使用 Lighthouse 测试 PWA 评分
 
 ##
 ## 📝 License
