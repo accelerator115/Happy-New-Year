@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Testing
+coverage
+.vitest
+
 # Editor directories and files
 .vscode/*
 .github/prompts

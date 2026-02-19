@@ -27,21 +27,18 @@ jobs:
       - name: Run lint
         run: npm run lint
 
-      - name: Run lint:fix
-        run: npm run lint:fix
-
-      - name: Run lint-staged
-        run: npx lint-staged
-
       - name: Run tests
-        run: npm test
+        run: npm run test
+
+      - name: Run test coverage
+        run: npm run test:coverage
 
       - name: Build project
         run: npm run build
 
       - name: Verify PWA build
         run: |
-          npm run build
           if [ ! -f dist/sw.js ]; then
             echo "PWA build failed: Service Worker not found!" && exit 1
           fi
+          echo "✅ PWA build successful!"
